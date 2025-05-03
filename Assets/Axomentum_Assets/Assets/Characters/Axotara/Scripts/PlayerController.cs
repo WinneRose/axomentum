@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -30,12 +31,21 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
 
     #endregion
+    
+    #region Health & Mana System 
+    
+    [SerializeField] private Image healthBarImage;
+    [SerializeField] private float healthBarLerpSpeed = 5f;
+    [SerializeField] private HealthManager _healthManager;
+    
+    #endregion
 
     private void OnEnable()
     {
         _inputAction.Enable();
         _inputAction.started += OnMoveKeyStarted;
         _inputAction.canceled += OnMoveKeyCanceled;
+        
     }
 
     private void OnDisable()
@@ -50,6 +60,15 @@ public class PlayerController : MonoBehaviour
         _rigidBody2D = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _healthManager = GetComponent<HealthManager>();
+        
+        HealthInitialized();
+        
+        // Subscribe to health change
+        if (_healthManager != null)
+        {
+            _healthManager.onHealthChanged.AddListener(HealthInitialized);
+        }
     }
 
     private void FixedUpdate()
@@ -72,6 +91,27 @@ public class PlayerController : MonoBehaviour
 
         // Animation speed state
         _animator.SetFloat("pSpeed", Mathf.Abs(moveDirection.x));
+    }
+
+    private void Update()
+    {
+        if (healthBarImage != null && _healthManager != null)
+        {
+            float targetFill = (float)_healthManager.GetCurrentHealth() / _healthManager.GetMaxHealth();
+            healthBarImage.fillAmount = Mathf.Lerp(healthBarImage.fillAmount, targetFill, Time.deltaTime * healthBarLerpSpeed);
+        }
+    }
+
+    [ContextMenu("Test: Take 20 Damage")]
+    public void TestTakeDamage()
+    {
+        ReceiveDamage(20);
+    }
+    
+    public void ReceiveDamage(int amount)
+    {
+        _healthManager.TakeDamage(amount);
+        Debug.Log("Received Damage: " + amount);
     }
 
     void Jump()
@@ -119,4 +159,14 @@ public class PlayerController : MonoBehaviour
             Gizmos.DrawWireSphere(groundCheckPoint.position, groundCheckRadius);
         }
     }
+
+    public void HealthInitialized()
+    {
+        if (healthBarImage != null && _healthManager != null)
+        {
+            healthBarImage.fillAmount = (float)_healthManager.GetCurrentHealth() / _healthManager.GetMaxHealth();
+        }
+    }
+    
+    
 }
