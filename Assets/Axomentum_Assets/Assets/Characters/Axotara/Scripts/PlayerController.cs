@@ -4,11 +4,10 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-
     #region Character Components
 
     [SerializeField] private Rigidbody2D _rigidBody2D;
-    [SerializeField] private Animator _animator; 
+    [SerializeField] private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     [SerializeField] private InputAction _inputAction;
 
@@ -18,8 +17,8 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
-    private bool _isFacingRight = false;
-    Vector2 moveDirection = Vector2.zero;  
+    private bool _isFacingRight = true;
+    Vector2 moveDirection = Vector2.zero;
 
     #endregion
 
@@ -53,36 +52,32 @@ public class PlayerController : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    
     private void FixedUpdate()
     {
-        _spriteRenderer.flipX = _isFacingRight;
-        _animator.SetBool("pGrounded", isGrounded);
         isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadius, groundLayer);
+        _animator.SetBool("pGrounded", isGrounded);
+
         moveDirection = _inputAction.ReadValue<Vector2>();
         _rigidBody2D.linearVelocity = new Vector2(moveDirection.x * moveSpeed * 10, _rigidBody2D.linearVelocity.y);
 
-        if (_rigidBody2D.linearVelocity.x > 0 || _rigidBody2D.linearVelocity.y < 0)
-        {
-            _animator.SetFloat("pSpeed", 1);
-            
-        }
+        // Handle flipping based on movement
+        // Flip for left-facing default sprite
+        if (moveDirection.x > 0.01f)
+            _isFacingRight = true;
+        else if (moveDirection.x < -0.01f)
+            _isFacingRight = false;
 
-        if (_rigidBody2D.linearVelocity.x == 0)
-        {
-            _animator.SetFloat("pSpeed", 0);
-        }
-        
-        
-        
-        
+        _spriteRenderer.flipX = _isFacingRight;  // ← This is now correct for left-facing base
+
+
+        // Animation speed state
+        _animator.SetFloat("pSpeed", Mathf.Abs(moveDirection.x));
     }
 
     void Jump()
     {
         if (isGrounded)
         {
-            _spriteRenderer.flipX = _isFacingRight; // true = right, false = left
             _rigidBody2D.AddForce(Vector2.up * jumpForce * 10, ForceMode2D.Impulse);
             _animator.SetTrigger("pJump");
         }
@@ -106,20 +101,8 @@ public class PlayerController : MonoBehaviour
         {
             Crouch();
         }
-
-        if (keyPressed == "d")
-        {
-            _isFacingRight = true;
-   
-        }
-
-        if (keyPressed == "a")
-        {
-            _isFacingRight = false;
-        }
-        
     }
-    
+
     private void OnMoveKeyCanceled(InputAction.CallbackContext context)
     {
         string keyReleased = context.control.name;
@@ -127,7 +110,7 @@ public class PlayerController : MonoBehaviour
         if (keyReleased == "s")
             _animator.SetBool("pCrouching", false);
     }
-    
+
     private void OnDrawGizmosSelected()
     {
         if (groundCheckPoint != null)
