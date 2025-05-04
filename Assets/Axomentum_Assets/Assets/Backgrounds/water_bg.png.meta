@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c41f7317320a8ae458eee7d9a308fab0
+guid: d4651dc573dc3ac4693d6ad9eb00ad01
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8083313697555077759
-    second: fire_bg1_0
+      213: -2289756756318659855
+    second: water_bg_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: fire_bg1_0
+      name: water_bg_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f7ad1de0bf2bd2070800000000000000
-      internalID: 8083313697555077759
+      spriteID: 1fa539d9c562930e0800000000000000
+      internalID: -2289756756318659855
       vertices: []
       indices: 
       edges: []
@@ -134,8 +134,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      fire_bg1_0: 8083313697555077759
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
