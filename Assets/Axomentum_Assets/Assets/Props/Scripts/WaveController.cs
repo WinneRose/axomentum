@@ -9,37 +9,56 @@ public class WaveController : MonoBehaviour
     public float offsetAfterBlock = 20.0f;
     public string iceBlockTag = "IceBlock";
     public float waitTime = 4.0f;
+
     private SpriteRenderer spriteRenderer;
     private Collider2D waveCollider;
     private float initialY;
     private bool isWaiting = false;
     private bool hasHitBlock = false;
     private float dynamicEndX = float.MaxValue;
+    private bool waveCycleStarted = false;
+
+    void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        waveCollider = GetComponent<Collider2D>();
+        if (spriteRenderer == null) Debug.LogError("WaveController: SpriteRenderer bulunamad�!", gameObject);
+        if (waveCollider == null) Debug.LogError("WaveController: Collider2D bulunamad�!", gameObject);
+    }
 
     void Start()
     {
         initialY = transform.position.y;
-        ResetWaveToStart();
+        SetWaveState(false);
+        isWaiting = true;
     }
 
     void Update()
     {
-        if (isWaiting || iceBlockTransform == null)
+        if (!waveCycleStarted || isWaiting || iceBlockTransform == null)
         {
             return;
         }
+
         transform.Translate(Vector2.right * speed * Time.deltaTime);
 
         if (hasHitBlock)
         {
             if (transform.position.x >= dynamicEndX)
             {
-                if (!isWaiting)
-                {
-                    StartCoroutine(RecycleWave());
-                }
+                StartCoroutine(RecycleWave());
             }
         }
+    }
+
+    public void StartWaveCycle()
+    {
+        if (waveCycleStarted) return;
+
+        Debug.Log("Wave Cycle Starting!");
+        waveCycleStarted = true;
+        isWaiting = false;
+        ResetWaveToStart();
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -50,6 +69,7 @@ public class WaveController : MonoBehaviour
             dynamicEndX = transform.position.x + offsetAfterBlock;
         }
     }
+
     void SetWaveState(bool active)
     {
         if (spriteRenderer != null) spriteRenderer.enabled = active;
@@ -71,13 +91,11 @@ public class WaveController : MonoBehaviour
 
         hasHitBlock = false;
         dynamicEndX = float.MaxValue;
-
         transform.position = new Vector3(targetStartX, initialY, transform.position.z);
-
         SetWaveState(true);
-
         isWaiting = false;
     }
+
     IEnumerator RecycleWave()
     {
         isWaiting = true;

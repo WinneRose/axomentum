@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public enum Elements { Fire, Water, Air, Ground }
 
@@ -24,6 +26,18 @@ public class AbilityManager : MonoBehaviour
     [SerializeField] private GameObject groundPlatformPrefab;
     [SerializeField] private GameObject icePlatformPrefab;
     [SerializeField] private GameObject platformDestroyPSPrefab;
+    #endregion
+
+    #region Ability UI Icons
+    [SerializeField] private Sprite[] dashIcons = new Sprite[2]; // [0]=locked, [1]=unlocked
+    [SerializeField] private Sprite[] icePlatformIcons = new Sprite[2];
+    [SerializeField] private Sprite[] groundPlatformIcons = new Sprite[2];
+    [SerializeField] private Sprite[] doubleJumpIcons = new Sprite[2];
+
+    [SerializeField] private Image dashIconImage;
+    [SerializeField] private Image icePlatformIconImage;
+    [SerializeField] private Image groundPlatformIconImage;
+    [SerializeField] private Image doubleJumpIconImage;
     #endregion
 
     private void Awake()
@@ -71,7 +85,7 @@ public class AbilityManager : MonoBehaviour
                 activeElements.Add(Elements.Ground);
                 break;
             case "scn_testScene":
-                activeElements.AddRange(new[] { Elements.Water });
+                activeElements.AddRange(new[] { Elements.Water, Elements.Air, Elements.Fire });
                 break;
             default:
                 Debug.LogWarning("No elements defined for this scene.");
@@ -80,6 +94,23 @@ public class AbilityManager : MonoBehaviour
 
         foreach (var element in activeElements)
             Debug.Log($"Activated: {element}");
+
+        RefreshAbilityIcons();
+    }
+
+    private void RefreshAbilityIcons()
+    {
+        // Air = Dash
+        dashIconImage.sprite = IsElementActive(Elements.Air) ? dashIcons[1] : dashIcons[0];
+
+        // Fire = Double Jump
+        doubleJumpIconImage.sprite = IsElementActive(Elements.Fire) ? doubleJumpIcons[1] : doubleJumpIcons[0];
+
+        // Ground = Ground Platform
+        groundPlatformIconImage.sprite = IsElementActive(Elements.Ground) ? groundPlatformIcons[1] : groundPlatformIcons[0];
+
+        // Water = Ice Platform
+        icePlatformIconImage.sprite = IsElementActive(Elements.Water) ? icePlatformIcons[1] : icePlatformIcons[0];
     }
 
     public bool IsElementActive(Elements element)
@@ -103,20 +134,23 @@ public class AbilityManager : MonoBehaviour
 
     public void GroundPlatform()
     {
-        if (!IsElementActive(Elements.Ground)) return;
+        if (!IsElementActive(Elements.Ground ) || _playerController.isGrounded) return;
 
-        Vector3 spawnPosition = playerTransform.position + Vector3.down * 1.5f;
+        Vector3 spawnPosition = playerTransform.position + Vector3.down * 0.5f;
         GameObject groundPlatform = Instantiate(groundPlatformPrefab, spawnPosition, Quaternion.identity);
         StartCoroutine(DestroyAfterSeconds(groundPlatform));
     }
 
     public void IcePlatform()
     {
-        if (!IsElementActive(Elements.Water)) return;
+        if (!IsElementActive(Elements.Water) && _playerController.isGrounded) return;
 
-        Vector3 spawnPosition = playerTransform.position + Vector3.down * 1.5f;
+        Vector3 spawnPosition = playerTransform.position + Vector3.down * 0.5f;
         GameObject icePlatform = Instantiate(icePlatformPrefab, spawnPosition, Quaternion.identity);
         StartCoroutine(DestroyAfterSeconds(icePlatform));
+        
+       
+        
     }
 
     private IEnumerator DestroyAfterSeconds(GameObject platform)
@@ -131,7 +165,7 @@ public class AbilityManager : MonoBehaviour
             if (platformDestroyPSPrefab != null)
             {
                 GameObject ps = Instantiate(platformDestroyPSPrefab, pos, Quaternion.identity);
-                Destroy(ps, 3f); // optional: auto destroy particle
+                Destroy(ps, 3f);
             }
         }
     }
@@ -151,15 +185,11 @@ public class AbilityManager : MonoBehaviour
             {
                 IcePlatform();
             }
-            
             else if (keyPressed == "e" && IsElementActive(Elements.Ground))
             {
                 GroundPlatform();
             }
         }
-        
-        
-            
     }
 
     bool CanPlacePlatform()

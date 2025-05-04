@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<< HEAD
 guid: 9e7cb0137c6b9e24685d96c7ac9b06bb
-=======
-guid: 7aa33a71dabfbf644ad4d25e9dbae637
->>>>>>> leveldesign
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -44,11 +40,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-<<<<<<< HEAD
-    filterMode: 0
-=======
     filterMode: 1
->>>>>>> leveldesign
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -167,13 +159,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-<<<<<<< HEAD
-    nameFileIdTable:
-      UI Bar_0: -6153102878295827156
-      UI Bar_1: 8359487191082203385
-=======
     nameFileIdTable: {}
->>>>>>> leveldesign
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
