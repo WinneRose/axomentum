@@ -1077,48 +1077,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1274083053 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8599595199362181397, guid: 25e9412ca1a6efc4ba0c2542fe047299, type: 3}
-  m_PrefabInstance: {fileID: 1253150418715089148}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1274083060
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1274083053}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e931f367f4c2b64ea4eb8ca604543ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 100
-  currentHealth: 0
-  onDamaged:
-    m_PersistentCalls:
-      m_Calls: []
-  onDeath:
-    m_PersistentCalls:
-      m_Calls: []
-  onHealthChanged:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1274083060}
-        m_TargetAssemblyTypeName: HealthManager, Assembly-CSharp
-        m_MethodName: ChangeHealthBGImage
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  healthBarBGImage: {fileID: 785839959}
-  healthBarImage: {fileID: 8359487191082203385, guid: 9e7cb0137c6b9e24685d96c7ac9b06bb, type: 3}
 --- !u!1 &1353521925
 GameObject:
   m_ObjectHideFlags: 0
@@ -1807,16 +1765,40 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2308890381295101894, guid: 25e9412ca1a6efc4ba0c2542fe047299, type: 3}
-      propertyPath: _healthManager
-      value: 
+      propertyPath: dashForce
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2308890381295101894, guid: 25e9412ca1a6efc4ba0c2542fe047299, type: 3}
+      propertyPath: dashCooldown
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2308890381295101894, guid: 25e9412ca1a6efc4ba0c2542fe047299, type: 3}
       propertyPath: healthBarImage
       value: 
       objectReference: {fileID: 1019634155}
-    - target: {fileID: 5378038162213712567, guid: 25e9412ca1a6efc4ba0c2542fe047299, type: 3}
-      propertyPath: orthographic size
-      value: 6
+    - target: {fileID: 2308890381295101894, guid: 25e9412ca1a6efc4ba0c2542fe047299, type: 3}
+      propertyPath: dashParticlePrefab
+      value: 
+      objectReference: {fileID: 767733564748430277, guid: abf811377ec2e084e9ae2f6144c72a5a, type: 3}
+    - target: {fileID: 5342609341673063590, guid: 25e9412ca1a6efc4ba0c2542fe047299, type: 3}
+      propertyPath: healthBarBGImage
+      value: 
+      objectReference: {fileID: 785839959}
+    - target: {fileID: 6616613755169596253, guid: 25e9412ca1a6efc4ba0c2542fe047299, type: 3}
+      propertyPath: _inputAction.m_SingletonActionBindings.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6616613755169596253, guid: 25e9412ca1a6efc4ba0c2542fe047299, type: 3}
+      propertyPath: _inputAction.m_SingletonActionBindings.Array.data[0].m_Id
+      value: aaba3d8b-3ee9-41a2-aec5-6755aaf3cc78
+      objectReference: {fileID: 0}
+    - target: {fileID: 6616613755169596253, guid: 25e9412ca1a6efc4ba0c2542fe047299, type: 3}
+      propertyPath: _inputAction.m_SingletonActionBindings.Array.data[0].m_Path
+      value: <Keyboard>/shift
+      objectReference: {fileID: 0}
+    - target: {fileID: 6616613755169596253, guid: 25e9412ca1a6efc4ba0c2542fe047299, type: 3}
+      propertyPath: _inputAction.m_SingletonActionBindings.Array.data[0].m_Action
+      value: Input
       objectReference: {fileID: 0}
     - target: {fileID: 6907299441536154049, guid: 25e9412ca1a6efc4ba0c2542fe047299, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1865,10 +1847,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8599595199362181397, guid: 25e9412ca1a6efc4ba0c2542fe047299, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1274083060}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 25e9412ca1a6efc4ba0c2542fe047299, type: 3}
 --- !u!1001 &2058365841461211457
 PrefabInstance:

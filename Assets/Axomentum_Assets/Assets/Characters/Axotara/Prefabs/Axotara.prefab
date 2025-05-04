@@ -69,7 +69,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 6
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -182,6 +182,8 @@ GameObject:
   - component: {fileID: 8798710265963528687}
   - component: {fileID: 4470188827680642665}
   - component: {fileID: 2308890381295101894}
+  - component: {fileID: 5342609341673063590}
+  - component: {fileID: 6616613755169596253}
   m_Layer: 3
   m_Name: Axotara
   m_TagString: Player
@@ -370,6 +372,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rigidBody2D: {fileID: 0}
   _animator: {fileID: 0}
+  _spriteRenderer: {fileID: 0}
   _inputAction:
     m_Name: Input
     m_Type: 0
@@ -420,9 +423,107 @@ MonoBehaviour:
       m_Flags: 8
     m_Flags: 0
   moveSpeed: 1
-  jumpForce: 1
+  jumpForce: 0.7
   groundCheckPoint: {fileID: 64326216217319575}
   groundCheckRadius: 0.5
   groundLayer:
     serializedVersion: 2
     m_Bits: 65
+  isGrounded: 0
+  canDoubleJump: 0
+  dashForce: 5
+  dashCooldown: 0.5
+  dashParticlePrefab: {fileID: 767733564748430277, guid: abf811377ec2e084e9ae2f6144c72a5a, type: 3}
+  dashParticleLifetime: 0.5
+  healthBarImage: {fileID: 0}
+  healthBarLerpSpeed: 5
+  _healthManager: {fileID: 0}
+--- !u!114 &5342609341673063590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8599595199362181397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e931f367f4c2b64ea4eb8ca604543ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 0
+  onDamaged:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  onHealthChanged:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5342609341673063590}
+        m_TargetAssemblyTypeName: HealthManager, Assembly-CSharp
+        m_MethodName: ChangeHealthBGImage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  healthBarBGImage: {fileID: 0}
+  healthBarImage: {fileID: 8359487191082203385, guid: 9e7cb0137c6b9e24685d96c7ac9b06bb, type: 3}
+--- !u!114 &6616613755169596253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8599595199362181397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40b6d1e8257cfc84eab9dd899c89d11e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerController: {fileID: 0}
+  _inputAction:
+    m_Name: Input
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: b3d7f426-9b53-4fe8-b81f-048e726e738b
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: aaba3d8b-3ee9-41a2-aec5-6755aaf3cc78
+      m_Path: <Keyboard>/shift
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Input
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 389c602f-67c6-422a-8c8f-4d46a201cbb1
+      m_Path: <Keyboard>/q
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Input
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 284e05bc-edc9-439d-ab2b-406920bc415f
+      m_Path: <Keyboard>/e
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Input
+      m_Flags: 0
+    m_Flags: 0
+  playerTransform: {fileID: 6907299441536154049}
+  activeElements: 
+  PlatformPlaceCooldown: 1.5
+  groundPlatformPrefab: {fileID: 2824507170367716894, guid: e780eb8a16ead574fa8d55793051e182, type: 3}
+  icePlatformPrefab: {fileID: 5006979021399280308, guid: d189776a8132be8409fbea1c3ed10a76, type: 3}
+  platformDestroyPSPrefab: {fileID: 5346653353787606454, guid: 1fa6f1c97f137154f87b582123384596, type: 3}

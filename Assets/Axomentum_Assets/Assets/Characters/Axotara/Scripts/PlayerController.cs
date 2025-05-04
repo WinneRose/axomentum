@@ -7,37 +7,56 @@ public class PlayerController : MonoBehaviour
 {
     #region Character Components
 
+    [Header("Character Components")]
     [SerializeField] private Rigidbody2D _rigidBody2D;
     [SerializeField] private Animator _animator;
-    private SpriteRenderer _spriteRenderer;
+    [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private InputAction _inputAction;
 
     #endregion
 
     #region Character Values
 
-    [SerializeField] private float moveSpeed;
-    [SerializeField] private float jumpForce;
+    [Header("Character Movement Settings")]
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float jumpForce = 10f;
     private bool _isFacingRight = true;
-    Vector2 moveDirection = Vector2.zero;
+    private Vector2 moveDirection = Vector2.zero;
 
     #endregion
 
     #region Jump & Ground Check
 
+    [Header("Jump & Ground Check")]
     [SerializeField] private Transform groundCheckPoint;
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
-    private bool isGrounded;
+    public bool isGrounded;
+    public bool canDoubleJump;
 
     #endregion
+
+    #region Dash
+
+    [Header("Dash Settings")]
+    [SerializeField] private float dashForce = 20f;
+    [SerializeField] private float dashCooldown = 1.5f;
+    private float lastDashTime = -Mathf.Infinity;
+    private bool isDashing = false;
     
-    #region Health & Mana System 
-    
+    [Header("Dash Visual")]
+    [SerializeField] private GameObject dashParticlePrefab;
+    [SerializeField] private float dashParticleLifetime = 0.5f;
+
+    #endregion
+
+    #region Health & Mana System
+
+    [Header("Health & UI")]
     [SerializeField] private Image healthBarImage;
     [SerializeField] private float healthBarLerpSpeed = 5f;
     [SerializeField] private HealthManager _healthManager;
-    
+
     #endregion
 
     private void OnEnable()
@@ -73,8 +92,18 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+
+        if (isDashing)
+        {
+            Dash();
+            isDashing = false;
+            return;
+        }
+        
+        
         isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadius, groundLayer);
         _animator.SetBool("pGrounded", isGrounded);
+        
 
         moveDirection = _inputAction.ReadValue<Vector2>();
         _rigidBody2D.linearVelocity = new Vector2(moveDirection.x * moveSpeed * 10, _rigidBody2D.linearVelocity.y);
@@ -91,6 +120,9 @@ public class PlayerController : MonoBehaviour
 
         // Animation speed state
         _animator.SetFloat("pSpeed", Mathf.Abs(moveDirection.x));
+        
+        
+        
     }
 
     private void Update()
@@ -120,6 +152,15 @@ public class PlayerController : MonoBehaviour
         {
             _rigidBody2D.AddForce(Vector2.up * jumpForce * 10, ForceMode2D.Impulse);
             _animator.SetTrigger("pJump");
+        }
+        else if (canDoubleJump)
+        {
+            _rigidBody2D.linearVelocity = new Vector2(_rigidBody2D.linearVelocity.x, 0); // reset vertical
+            _rigidBody2D.AddForce(Vector2.up * jumpForce * 10, ForceMode2D.Impulse);
+            _animator.SetTrigger("pJump");
+            
+            canDoubleJump = false;
+            ReceiveDamage(2);
         }
     }
 
@@ -165,6 +206,37 @@ public class PlayerController : MonoBehaviour
         if (healthBarImage != null && _healthManager != null)
         {
             healthBarImage.fillAmount = (float)_healthManager.GetCurrentHealth() / _healthManager.GetMaxHealth();
+        }
+    }
+    
+    public bool TryDash()
+    {
+        if (Time.time >= lastDashTime + dashCooldown)
+        {
+            isDashing = true;
+            lastDashTime = Time.time;
+            return true;
+        }
+        return false;
+    }
+
+    private void Dash()
+    {
+        Vector2 dashDirection = _isFacingRight ? Vector2.right : Vector2.left;
+
+        // Reset horizontal momentum before dash
+        _rigidBody2D.linearVelocity = new Vector2(0, _rigidBody2D.linearVelocity.y);
+
+        // Instant velocity assignment
+        _rigidBody2D.linearVelocity = new Vector2(dashDirection.x * dashForce * 10, _rigidBody2D.linearVelocity.y);
+
+        Debug.Log("Player dashed & Took Damage");
+        ReceiveDamage(5);
+        
+        if (dashParticlePrefab != null)
+        {
+            GameObject particle = Instantiate(dashParticlePrefab, transform.position, Quaternion.identity);
+            Destroy(particle, dashParticleLifetime);
         }
     }
     
