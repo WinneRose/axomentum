@@ -1,17 +1,10 @@
 fileFormatVersion: 2
-<<<<<<< HEAD
-guid: 9e7cb0137c6b9e24685d96c7ac9b06bb
-=======
-guid: 7aa33a71dabfbf644ad4d25e9dbae637
->>>>>>> leveldesign
+guid: 1ff73f3adf44aa648aad646679dbec8b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6153102878295827156
-    second: UI Bar_0
-  - first:
-      213: 8359487191082203385
-    second: UI Bar_1
+      213: -6716138686613150482
+    second: lockIcons_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -44,11 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-<<<<<<< HEAD
     filterMode: 0
-=======
-    filterMode: 1
->>>>>>> leveldesign
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -62,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 256
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -85,7 +74,7 @@ TextureImporter:
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 4
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -111,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: UI Bar_0
+      name: lockIcons_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 136
-        width: 518
-        height: 120
+        y: 0
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -126,30 +115,74 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c2d5eb06889cb9aa0800000000000000
-      internalID: -6153102878295827156
+      spriteID: ee42a2ab27b7bc2a0800000000000000
+      internalID: -6716138686613150482
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UI Bar_1
+      name: lockIcons_1
       rect:
         serializedVersion: 2
-        x: 0
-        y: 8
-        width: 518
-        height: 121
+        x: 256
+        y: 0
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9f8f1e05f4dd20470800000000000000
-      internalID: 8359487191082203385
+      spriteID: 6dc38afbcd0128741b5b9b951e01ca51
+      internalID: 1394944206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lockIcons_2
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33ca85e00b1629b4f9abac49accf47ed
+      internalID: -118219298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lockIcons_3
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4da1518f638339448723b4f6fc1e9ee
+      internalID: -1630619468
       vertices: []
       indices: 
       edges: []
@@ -158,7 +191,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 8eed4b39073cc5341a7f2519c0bcbc16
     internalID: 0
     vertices: []
     indices: 
@@ -166,14 +199,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
-<<<<<<< HEAD
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":256.0,"y":256.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      UI Bar_0: -6153102878295827156
-      UI Bar_1: 8359487191082203385
-=======
-    nameFileIdTable: {}
->>>>>>> leveldesign
+      lockIcons_0: -6716138686613150482
+      lockIcons_1: 1394944206
+      lockIcons_2: -118219298
+      lockIcons_3: -1630619468
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
