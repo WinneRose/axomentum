@@ -59,6 +59,13 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
+    #region Moving Platform
+
+    private string movingPlatformTag = "IceBlock";
+    private Transform currentPlatform = null;
+
+    #endregion
+
     private void OnEnable()
     {
         _inputAction.Enable();
@@ -237,6 +244,38 @@ public class PlayerController : MonoBehaviour
         {
             GameObject particle = Instantiate(dashParticlePrefab, transform.position, Quaternion.identity);
             Destroy(particle, dashParticleLifetime);
+        }
+    }
+    
+    
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag(movingPlatformTag))
+        {
+            ContactPoint2D[] contacts = collision.contacts;
+            bool landedOnTop = false;
+            foreach (ContactPoint2D contact in contacts)
+            {
+                if (contact.normal.y > 0.5f)
+                {
+                    landedOnTop = true;
+                    break;
+                }
+            }
+
+            if (landedOnTop)
+            {
+                transform.SetParent(collision.transform);
+                currentPlatform = collision.transform;
+            }
+        }
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.transform == currentPlatform)
+        {
+            currentPlatform = null;
         }
     }
     
