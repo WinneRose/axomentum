@@ -1,34 +1,68 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-
     #region Character Components
 
+    [Header("Character Components")]
     [SerializeField] private Rigidbody2D _rigidBody2D;
-    [SerializeField] private Animator _animator; 
-    private SpriteRenderer _spriteRenderer;
+    [SerializeField] private Animator _animator;
+    [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private InputAction _inputAction;
 
     #endregion
 
     #region Character Values
 
-    [SerializeField] private float moveSpeed;
-    [SerializeField] private float jumpForce;
-    private bool _isFacingRight = false;
-    Vector2 moveDirection = Vector2.zero;  
+    [Header("Character Movement Settings")]
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float jumpForce = 10f;
+    private bool _isFacingRight = true;
+    private Vector2 moveDirection = Vector2.zero;
 
     #endregion
 
     #region Jump & Ground Check
 
+    [Header("Jump & Ground Check")]
     [SerializeField] private Transform groundCheckPoint;
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
-    private bool isGrounded;
+    public bool isGrounded;
+    public bool canDoubleJump;
+
+    #endregion
+
+    #region Dash
+
+    [Header("Dash Settings")]
+    [SerializeField] private float dashForce = 20f;
+    [SerializeField] private float dashCooldown = 1.5f;
+    private float lastDashTime = -Mathf.Infinity;
+    private bool isDashing = false;
+    
+    [Header("Dash Visual")]
+    [SerializeField] private GameObject dashParticlePrefab;
+    [SerializeField] private float dashParticleLifetime = 0.5f;
+
+    #endregion
+
+    #region Health & Mana System
+
+    [Header("Health & UI")]
+    [SerializeField] private Image healthBarImage;
+    [SerializeField] private float healthBarLerpSpeed = 5f;
+    [SerializeField] private HealthManager _healthManager;
+
+    #endregion
+
+    #region Moving Platform
+
+    private string movingPlatformTag = "IceBlock";
+    private Transform currentPlatform = null;
 
     #endregion
 
@@ -37,6 +71,7 @@ public class PlayerController : MonoBehaviour
         _inputAction.Enable();
         _inputAction.started += OnMoveKeyStarted;
         _inputAction.canceled += OnMoveKeyCanceled;
+        
     }
 
     private void OnDisable()
@@ -51,40 +86,88 @@ public class PlayerController : MonoBehaviour
         _rigidBody2D = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _healthManager = GetComponent<HealthManager>();
+        
+        HealthInitialized();
+        
+        // Subscribe to health change
+        if (_healthManager != null)
+        {
+            _healthManager.onHealthChanged.AddListener(HealthInitialized);
+        }
     }
 
-    
     private void FixedUpdate()
     {
-        _spriteRenderer.flipX = _isFacingRight;
-        _animator.SetBool("pGrounded", isGrounded);
+
+        if (isDashing)
+        {
+            Dash();
+            isDashing = false;
+            return;
+        }
+        
+        
         isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadius, groundLayer);
+        _animator.SetBool("pGrounded", isGrounded);
+        
+
         moveDirection = _inputAction.ReadValue<Vector2>();
         _rigidBody2D.linearVelocity = new Vector2(moveDirection.x * moveSpeed * 10, _rigidBody2D.linearVelocity.y);
 
-        if (_rigidBody2D.linearVelocity.x > 0 || _rigidBody2D.linearVelocity.y < 0)
-        {
-            _animator.SetFloat("pSpeed", 1);
-            
-        }
+        // Handle flipping based on movement
+        // Flip for left-facing default sprite
+        if (moveDirection.x > 0.01f)
+            _isFacingRight = true;
+        else if (moveDirection.x < -0.01f)
+            _isFacingRight = false;
 
-        if (_rigidBody2D.linearVelocity.x == 0)
+        _spriteRenderer.flipX = _isFacingRight;  // ← This is now correct for left-facing base
+
+
+        // Animation speed state
+        _animator.SetFloat("pSpeed", Mathf.Abs(moveDirection.x));
+        
+        
+        
+    }
+
+    private void Update()
+    {
+        if (healthBarImage != null && _healthManager != null)
         {
-            _animator.SetFloat("pSpeed", 0);
+            float targetFill = (float)_healthManager.GetCurrentHealth() / _healthManager.GetMaxHealth();
+            healthBarImage.fillAmount = Mathf.Lerp(healthBarImage.fillAmount, targetFill, Time.deltaTime * healthBarLerpSpeed);
         }
-        
-        
-        
-        
+    }
+
+    [ContextMenu("Test: Take 20 Damage")]
+    public void TestTakeDamage()
+    {
+        ReceiveDamage(20);
+    }
+    
+    public void ReceiveDamage(int amount)
+    {
+        _healthManager.TakeDamage(amount);
+        Debug.Log("Received Damage: " + amount);
     }
 
     void Jump()
     {
         if (isGrounded)
         {
-            _spriteRenderer.flipX = _isFacingRight; // true = right, false = left
             _rigidBody2D.AddForce(Vector2.up * jumpForce * 10, ForceMode2D.Impulse);
             _animator.SetTrigger("pJump");
+        }
+        else if (canDoubleJump)
+        {
+            _rigidBody2D.linearVelocity = new Vector2(_rigidBody2D.linearVelocity.x, 0); // reset vertical
+            _rigidBody2D.AddForce(Vector2.up * jumpForce * 10, ForceMode2D.Impulse);
+            _animator.SetTrigger("pJump");
+            
+            canDoubleJump = false;
+            ReceiveDamage(2);
         }
     }
 
@@ -106,20 +189,8 @@ public class PlayerController : MonoBehaviour
         {
             Crouch();
         }
-
-        if (keyPressed == "d")
-        {
-            _isFacingRight = true;
-   
-        }
-
-        if (keyPressed == "a")
-        {
-            _isFacingRight = false;
-        }
-        
     }
-    
+
     private void OnMoveKeyCanceled(InputAction.CallbackContext context)
     {
         string keyReleased = context.control.name;
@@ -127,7 +198,7 @@ public class PlayerController : MonoBehaviour
         if (keyReleased == "s")
             _animator.SetBool("pCrouching", false);
     }
-    
+
     private void OnDrawGizmosSelected()
     {
         if (groundCheckPoint != null)
@@ -136,4 +207,77 @@ public class PlayerController : MonoBehaviour
             Gizmos.DrawWireSphere(groundCheckPoint.position, groundCheckRadius);
         }
     }
+
+    public void HealthInitialized()
+    {
+        if (healthBarImage != null && _healthManager != null)
+        {
+            healthBarImage.fillAmount = (float)_healthManager.GetCurrentHealth() / _healthManager.GetMaxHealth();
+        }
+    }
+    
+    public bool TryDash()
+    {
+        if (Time.time >= lastDashTime + dashCooldown)
+        {
+            isDashing = true;
+            lastDashTime = Time.time;
+            return true;
+        }
+        return false;
+    }
+
+    private void Dash()
+    {
+        Vector2 dashDirection = _isFacingRight ? Vector2.right : Vector2.left;
+
+        // Reset horizontal momentum before dash
+        _rigidBody2D.linearVelocity = new Vector2(0, _rigidBody2D.linearVelocity.y);
+
+        // Instant velocity assignment
+        _rigidBody2D.linearVelocity = new Vector2(dashDirection.x * dashForce * 10, _rigidBody2D.linearVelocity.y);
+
+        Debug.Log("Player dashed & Took Damage");
+        ReceiveDamage(5);
+        
+        if (dashParticlePrefab != null)
+        {
+            GameObject particle = Instantiate(dashParticlePrefab, transform.position, Quaternion.identity);
+            Destroy(particle, dashParticleLifetime);
+        }
+    }
+    
+    
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag(movingPlatformTag))
+        {
+            ContactPoint2D[] contacts = collision.contacts;
+            bool landedOnTop = false;
+            foreach (ContactPoint2D contact in contacts)
+            {
+                if (contact.normal.y > 0.5f)
+                {
+                    landedOnTop = true;
+                    break;
+                }
+            }
+
+            if (landedOnTop)
+            {
+                transform.SetParent(collision.transform);
+                currentPlatform = collision.transform;
+            }
+        }
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.transform == currentPlatform)
+        {
+            currentPlatform = null;
+        }
+    }
+    
+    
 }
