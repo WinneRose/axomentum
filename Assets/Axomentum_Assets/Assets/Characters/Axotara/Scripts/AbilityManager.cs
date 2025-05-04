@@ -73,16 +73,16 @@ public class AbilityManager : MonoBehaviour
         switch (sceneName)
         {
             case "scn_fireBiome":
-                activeElements.Add(Elements.Fire);
+                activeElements.AddRange(new[] { Elements.Air, Elements.Ground });
                 break;
             case "scn_waterBiome":
-                activeElements.Add(Elements.Air);
+                activeElements.AddRange(new[] { Elements.Air, Elements.Ground });
                 break;
             case "scn_airBiome":
-                activeElements.Add(Elements.Water);
+                activeElements.AddRange(new[] { Elements.Water,Elements.Fire });
                 break;
             case "scn_groundBiome":
-                activeElements.Add(Elements.Ground);
+                activeElements.AddRange(new[] { Elements.Water,Elements.Fire });
                 break;
             case "scn_testScene":
                 activeElements.AddRange(new[] { Elements.Water, Elements.Air, Elements.Fire });

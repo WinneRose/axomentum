@@ -103,4 +103,13 @@ public class WaveController : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         ResetWaveToStart();
     }
+    
+    public void StopWaveCycle()
+    {
+        waveCycleStarted = false;
+        isWaiting = true;
+        StopAllCoroutines();
+        SetWaveState(false);
+        Debug.Log("Wave Cycle Stopped.");
+    }
 }

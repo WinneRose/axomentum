@@ -860,7 +860,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fallingBlocks:
-  - {fileID: 0}
   - {fileID: 1414570042717228963}
   - {fileID: 1941788493375444440}
   - {fileID: 1686011633078989734}

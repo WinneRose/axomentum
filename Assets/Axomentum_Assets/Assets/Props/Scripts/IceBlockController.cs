@@ -10,11 +10,15 @@ public class IceBlockController : MonoBehaviour
     public float rotationSpeed = 50f;
     public float riseHeight = 0.5f;
     public string waveTag = "Wave";
+    [SerializeField] private Transform endLine;
+
+    [Header("Wave Settings")]
+    public WaveController[] waveControllerReference;
+    public Vector2 waveRandomOffsetRange = new Vector2(0.3f, 0.2f); // X and Y range
+    public float waveSpacing = 1.2f; // distance between waves
 
     [SerializeField] private bool startActivated = false;
     private bool isActivated = false;
-    public WaveController waveControllerReference;
-
     private bool isShaking = false;
     private Quaternion initialRotationDuringEffect;
 
@@ -23,16 +27,33 @@ public class IceBlockController : MonoBehaviour
         isActivated = startActivated;
         if (isActivated && waveControllerReference != null)
         {
-            waveControllerReference.StartWaveCycle();
+            RandomizeAndStartWaves();
         }
     }
 
     void Update()
     {
-        if (isActivated)
+        if (!isActivated) return;
+
+        // Check if we reached or passed the endLine
+        if (endLine != null && transform.position.x >= endLine.position.x)
         {
-            transform.Translate(Vector3.right * moveSpeed * Time.deltaTime, Space.World);
+            isActivated = false;
+            Debug.Log("IceBlock reached end line.");
+
+            // Stop all active wave cycles
+            foreach (var wave in waveControllerReference)
+            {
+                if (wave != null)
+                    wave.StopWaveCycle();
+            }
+
+            return;
         }
+
+
+        // Move the ice block if not reached
+        transform.Translate(Vector3.right * moveSpeed * Time.deltaTime, Space.World);
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -51,19 +72,52 @@ public class IceBlockController : MonoBehaviour
         Debug.Log("IceBlock Activated!");
         isActivated = true;
 
-        if (waveControllerReference != null)
+        if (waveControllerReference != null && waveControllerReference.Length > 0)
         {
-            StartCoroutine(DelayedStartWaveCycle(5.0f));
+            StartCoroutine(DelayedStartWaveCycle(3.0f));
         }
     }
+
     private IEnumerator DelayedStartWaveCycle(float delay)
     {
         yield return new WaitForSeconds(delay);
 
         if (waveControllerReference != null)
         {
-            waveControllerReference.StartWaveCycle();
+            RandomizeAndStartWaves();
         }
+    }
+
+    private void RandomizeAndStartWaves()
+    {
+        float startX = transform.position.x + 1f;
+        float currentX = startX;
+        float baseY = transform.position.y;
+
+        for (int i = 0; i < waveControllerReference.Length; i++)
+        {
+            var wave = waveControllerReference[i];
+            if (wave == null) continue;
+
+            // Random gap between waves (makes spacing natural)
+            float gap = Random.Range(1.0f, 6f);  // Increase this range for more variety
+            float yOffset = Random.Range(-0.5f, 0.5f); // Vertical bobbing
+
+            Vector3 newPosition = new Vector3(currentX, baseY + yOffset, 0);
+            wave.transform.position = newPosition;
+
+            float delay = Random.Range(0.05f, 0.3f);
+            StartCoroutine(DelayedWaveStart(wave, delay));
+
+            currentX += gap; // Increase X for next wave
+        }
+    }
+
+
+    private IEnumerator DelayedWaveStart(WaveController wave, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        wave.StartWaveCycle();
     }
 
     IEnumerator ShakeAndRiseCoroutine()
