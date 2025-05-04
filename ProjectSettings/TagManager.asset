@@ -4,8 +4,8 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - IceBlock
   - Wave
+  - IceBlock
   layers:
   - Default
   - TransparentFX

@@ -267,6 +267,11 @@ public class PlayerController : MonoBehaviour
             {
                 transform.SetParent(collision.transform);
                 currentPlatform = collision.transform;
+                IceBlockController blockController = collision.gameObject.GetComponent<IceBlockController>();
+                if (blockController != null)
+                {
+                    blockController.ActivateBlock();
+                }
             }
         }
     }

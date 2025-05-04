@@ -11,20 +11,58 @@ public class IceBlockController : MonoBehaviour
     public float riseHeight = 0.5f;
     public string waveTag = "Wave";
 
+    [SerializeField] private bool startActivated = false;
+    private bool isActivated = false;
+    public WaveController waveControllerReference;
+
     private bool isShaking = false;
     private Quaternion initialRotationDuringEffect;
 
+    void Start()
+    {
+        isActivated = startActivated;
+        if (isActivated && waveControllerReference != null)
+        {
+            waveControllerReference.StartWaveCycle();
+        }
+    }
+
     void Update()
     {
-        transform.Translate(Vector3.right * moveSpeed * Time.deltaTime, Space.World);
+        if (isActivated)
+        {
+            transform.Translate(Vector3.right * moveSpeed * Time.deltaTime, Space.World);
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag(waveTag) && !isShaking)
+        if (isActivated && other.CompareTag(waveTag) && !isShaking)
         {
             initialRotationDuringEffect = transform.localRotation;
             StartCoroutine(ShakeAndRiseCoroutine());
+        }
+    }
+
+    public void ActivateBlock()
+    {
+        if (isActivated) return;
+
+        Debug.Log("IceBlock Activated!");
+        isActivated = true;
+
+        if (waveControllerReference != null)
+        {
+            StartCoroutine(DelayedStartWaveCycle(5.0f));
+        }
+    }
+    private IEnumerator DelayedStartWaveCycle(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (waveControllerReference != null)
+        {
+            waveControllerReference.StartWaveCycle();
         }
     }
 
@@ -38,21 +76,15 @@ public class IceBlockController : MonoBehaviour
         {
             float dt = Time.deltaTime;
             float progress = elapsed / shakeDuration;
-
             float xOffset = Random.Range(-1f, 1f) * shakeMagnitude;
             float yOffset = Random.Range(-1f, 1f) * shakeMagnitude;
             Vector3 shakeOffset = new Vector3(xOffset, yOffset, 0);
-
             float verticalRise = Mathf.Sin(progress * Mathf.PI) * riseHeight;
             Vector3 riseOffset = new Vector3(0, verticalRise, 0);
-
             float zRotation = Mathf.Sin(Time.time * rotationSpeed) * rotationMagnitude;
-
             Vector3 expectedPositionWithoutEffect = originalPosition + (Vector3.right * moveSpeed * elapsed);
-
             transform.localPosition = expectedPositionWithoutEffect + shakeOffset + riseOffset;
             transform.localRotation = initialRotationDuringEffect * Quaternion.Euler(0, 0, zRotation);
-
             elapsed += dt;
             yield return null;
         }
@@ -60,7 +92,6 @@ public class IceBlockController : MonoBehaviour
         Vector3 finalExpectedPosition = originalPosition + (Vector3.right * moveSpeed * shakeDuration);
         transform.localPosition = finalExpectedPosition;
         transform.localRotation = initialRotationDuringEffect;
-
         isShaking = false;
     }
 }
