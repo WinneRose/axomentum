@@ -8,6 +8,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Axomentum_Assets/Scenes/scn_testScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/Axomentum_Assets/Scenes/scn_fireBiome.unity
+    guid: c29e6f0e1ddd1af46aaadf3216b5c025
+  - enabled: 1
+    path: Assets/Axomentum_Assets/Scenes/scn_groundBiome.unity
+    guid: e424adf43e7a34b4fb63913cd0548079
+  - enabled: 1
+    path: Assets/Axomentum_Assets/Scenes/scn_waterBiome.unity
+    guid: 0530cd964adb7de4aaf44a10690ffb0c
+  - enabled: 1
+    path: Assets/Axomentum_Assets/Scenes/scn_airBiome.unity
+    guid: b2e4726e7a2ec9b4ca234bbf50cc1e30
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
