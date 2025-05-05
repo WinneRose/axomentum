@@ -145,7 +145,7 @@ MonoBehaviour:
   musicSource: {fileID: 0}
   worldMusicTracks:
   - {fileID: 8300000, guid: 3596d1d71259bb746b0d72cb8cf2fea4, type: 3}
-  - {fileID: 8300000, guid: 3596d1d71259bb746b0d72cb8cf2fea4, type: 3}
   - {fileID: 8300000, guid: 0c5755cec983cc542a3ba51c80e1d4d5, type: 3}
   - {fileID: 8300000, guid: 4b944d7d088804943b5351526ecd6e3a, type: 3}
   - {fileID: 8300000, guid: 9e0cdd9cac1860548a24e4a3059981f9, type: 3}
+  - {fileID: 8300000, guid: 9e6e6f5b27523b149ad4b68de84fe6e0, type: 3}

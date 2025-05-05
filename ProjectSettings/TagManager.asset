@@ -6,6 +6,7 @@ TagManager:
   tags:
   - IceBlock
   - Wave
+  - ElementPortal
   layers:
   - Default
   - TransparentFX

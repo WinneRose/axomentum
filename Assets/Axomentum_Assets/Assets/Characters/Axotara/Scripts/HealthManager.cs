@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
+
 
 public class HealthManager : MonoBehaviour
 {
@@ -16,6 +19,8 @@ public class HealthManager : MonoBehaviour
     [Header("UI")]
     public Image healthBarBGImage;
     public Sprite healthBarImage;
+    
+   
 
     private void Awake()
     {
@@ -49,6 +54,14 @@ public class HealthManager : MonoBehaviour
         currentHealth = Mathf.Min(currentHealth + healAmount, maxHealth);
         onHealthChanged?.Invoke();
     }
+
+    public void ReloadScene()
+    {
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.buildIndex);
+    }
+
+    
 
     public int GetCurrentHealth() => currentHealth;
     public int GetMaxHealth() => maxHealth;

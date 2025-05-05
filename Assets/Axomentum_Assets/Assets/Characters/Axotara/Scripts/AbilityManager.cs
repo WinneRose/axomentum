@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,6 +21,17 @@ public class AbilityManager : MonoBehaviour
     [SerializeField] private float PlatformPlaceCooldown = 1.5f;
     #endregion
 
+    #region Cooldown Timers
+    private float lastIcePlatformTime = -Mathf.Infinity;
+    [SerializeField] private float icePlatformCooldown = 1.5f;
+
+    private float lastGroundPlatformTime = -Mathf.Infinity;
+    [SerializeField] private float groundPlatformCooldown = 1.5f;
+
+    private float lastDoubleJumpTime = -Mathf.Infinity;
+    [SerializeField] private float doubleJumpCooldown = 1.5f;
+    #endregion
+
     #region Prefabs and VFX
     [SerializeField] private GameObject groundPlatformPrefab;
     [SerializeField] private GameObject icePlatformPrefab;
@@ -29,7 +39,7 @@ public class AbilityManager : MonoBehaviour
     #endregion
 
     #region Ability UI Icons
-    [SerializeField] private Sprite[] dashIcons = new Sprite[2]; // [0]=locked, [1]=unlocked
+    [SerializeField] private Sprite[] dashIcons = new Sprite[2];
     [SerializeField] private Sprite[] icePlatformIcons = new Sprite[2];
     [SerializeField] private Sprite[] groundPlatformIcons = new Sprite[2];
     [SerializeField] private Sprite[] doubleJumpIcons = new Sprite[2];
@@ -62,8 +72,14 @@ public class AbilityManager : MonoBehaviour
     {
         if (_playerController.isGrounded && IsElementActive(Elements.Fire))
         {
-            _playerController.canDoubleJump = true;
+            if (CanUseDoubleJump())
+            {
+                _playerController.canDoubleJump = true;
+                lastDoubleJumpTime = Time.time;
+            }
         }
+
+        UpdateCooldownVisuals();
     }
 
     private void InitializeElementsForScene(string sceneName)
@@ -79,10 +95,10 @@ public class AbilityManager : MonoBehaviour
                 activeElements.AddRange(new[] { Elements.Air, Elements.Ground });
                 break;
             case "scn_airBiome":
-                activeElements.AddRange(new[] { Elements.Water,Elements.Fire });
+                activeElements.AddRange(new[] { Elements.Water, Elements.Fire });
                 break;
             case "scn_groundBiome":
-                activeElements.AddRange(new[] { Elements.Water,Elements.Fire });
+                activeElements.AddRange(new[] { Elements.Water, Elements.Fire });
                 break;
             case "scn_testScene":
                 activeElements.AddRange(new[] { Elements.Water, Elements.Air, Elements.Fire });
@@ -100,17 +116,25 @@ public class AbilityManager : MonoBehaviour
 
     private void RefreshAbilityIcons()
     {
-        // Air = Dash
         dashIconImage.sprite = IsElementActive(Elements.Air) ? dashIcons[1] : dashIcons[0];
-
-        // Fire = Double Jump
         doubleJumpIconImage.sprite = IsElementActive(Elements.Fire) ? doubleJumpIcons[1] : doubleJumpIcons[0];
-
-        // Ground = Ground Platform
         groundPlatformIconImage.sprite = IsElementActive(Elements.Ground) ? groundPlatformIcons[1] : groundPlatformIcons[0];
-
-        // Water = Ice Platform
         icePlatformIconImage.sprite = IsElementActive(Elements.Water) ? icePlatformIcons[1] : icePlatformIcons[0];
+    }
+
+    private void UpdateCooldownVisuals()
+    {
+        float dashRemaining = Mathf.Clamp01((_playerController.DashCooldown - (Time.time - _playerController.LastDashTime)) / _playerController.DashCooldown);
+        dashIconImage.color = new Color(1f, 1f, 1f, 1f - dashRemaining);
+
+        float iceRemaining = Mathf.Clamp01((icePlatformCooldown - (Time.time - lastIcePlatformTime)) / icePlatformCooldown);
+        icePlatformIconImage.color = new Color(1f, 1f, 1f, 1f - iceRemaining);
+
+        float groundRemaining = Mathf.Clamp01((groundPlatformCooldown - (Time.time - lastGroundPlatformTime)) / groundPlatformCooldown);
+        groundPlatformIconImage.color = new Color(1f, 1f, 1f, 1f - groundRemaining);
+
+        float djRemaining = Mathf.Clamp01((doubleJumpCooldown - (Time.time - lastDoubleJumpTime)) / doubleJumpCooldown);
+        doubleJumpIconImage.color = new Color(1f, 1f, 1f, 1f - djRemaining);
     }
 
     public bool IsElementActive(Elements element)
@@ -120,37 +144,41 @@ public class AbilityManager : MonoBehaviour
 
     public void Dash()
     {
-        if (IsElementActive(Elements.Air))
-        {
-            bool dashed = _playerController.TryDash();
-            if (!dashed)
-                Debug.Log("Dash is on cooldown");
-        }
-        else
+        if (!IsElementActive(Elements.Air))
         {
             Debug.Log("Air element not active, can't dash");
+            return;
+        }
+
+        bool dashed = _playerController.TryDash();
+        if (!dashed)
+        {
+            Debug.Log("Dash is on cooldown");
         }
     }
 
     public void GroundPlatform()
     {
-        if (!IsElementActive(Elements.Ground ) || _playerController.isGrounded) return;
+        if (!IsElementActive(Elements.Ground) || _playerController.isGrounded) return;
+        if (!CanUseGroundPlatform() || !CanPlacePlatform()) return;
 
+        lastGroundPlatformTime = Time.time;
         Vector3 spawnPosition = playerTransform.position + Vector3.down * 0.5f;
         GameObject groundPlatform = Instantiate(groundPlatformPrefab, spawnPosition, Quaternion.identity);
+        _playerController.ReceiveDamage(2);
         StartCoroutine(DestroyAfterSeconds(groundPlatform));
     }
 
     public void IcePlatform()
     {
-        if (!IsElementActive(Elements.Water) && _playerController.isGrounded) return;
+        if (!IsElementActive(Elements.Water) || _playerController.isGrounded) return;
+        if (!CanUseIcePlatform() || !CanPlacePlatform()) return;
 
+        lastIcePlatformTime = Time.time;
         Vector3 spawnPosition = playerTransform.position + Vector3.down * 0.5f;
         GameObject icePlatform = Instantiate(icePlatformPrefab, spawnPosition, Quaternion.identity);
+        _playerController.ReceiveDamage(2);
         StartCoroutine(DestroyAfterSeconds(icePlatform));
-        
-       
-        
     }
 
     private IEnumerator DestroyAfterSeconds(GameObject platform)
@@ -179,20 +207,39 @@ public class AbilityManager : MonoBehaviour
         if (keyPressed == "shift")
             Dash();
 
-        if (CanPlacePlatform())
+        if (keyPressed == "e")
         {
-            if (keyPressed == "e" && IsElementActive(Elements.Water))
+            if (IsElementActive(Elements.Water))
             {
                 IcePlatform();
+                
             }
-            else if (keyPressed == "e" && IsElementActive(Elements.Ground))
+                
+            else if (IsElementActive(Elements.Ground))
             {
                 GroundPlatform();
+               
             }
+               
         }
     }
 
-    bool CanPlacePlatform()
+    private bool CanUseIcePlatform()
+    {
+        return Time.time >= lastIcePlatformTime + icePlatformCooldown;
+    }
+
+    private bool CanUseGroundPlatform()
+    {
+        return Time.time >= lastGroundPlatformTime + groundPlatformCooldown;
+    }
+
+    private bool CanUseDoubleJump()
+    {
+        return Time.time >= lastDoubleJumpTime + doubleJumpCooldown;
+    }
+
+    private bool CanPlacePlatform()
     {
         if (Time.time > lastPlacedPlatform + PlatformPlaceCooldown)
         {

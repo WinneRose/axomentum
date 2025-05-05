@@ -51,24 +51,24 @@ public class AudioManager : MonoBehaviour
 
         switch (scene.name)
         {
-            case "scn_testScene":
+            case "scn_fireBiome":
                 newWorldIndex = 0;
                 break;
-            case "scn_fireBiome":
+            case "scn_groundBiome":
                 newWorldIndex = 1;
                 break;
-            case "scn_groundBiome":
+            case "scn_waterBiome":
                 newWorldIndex = 2;
                 break;
-            case "scn_waterBiome":
+            case "scn_airBiome":
                 newWorldIndex = 3;
                 break;
-            case "scn_airBiome":
+            case "scn_Elementra":
                 newWorldIndex = 4;
                 break;
             default:
                 if (musicSource != null) musicSource.Stop();
-                Debug.LogWarning($"Sahne '{scene.name}' için müzik atanmamýþ.");
+                Debug.LogWarning($"Sahne '{scene.name}' iï¿½in mï¿½zik atanmamï¿½ï¿½.");
                 return;
         }
 
@@ -94,12 +94,12 @@ public class AudioManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"World {worldIndex} için müzik klibi veya AudioSource bulunamadý!");
+                Debug.LogWarning($"World {worldIndex} iï¿½in mï¿½zik klibi veya AudioSource bulunamadï¿½!");
             }
         }
         else if (worldIndex < 0 || worldIndex >= worldMusicTracks.Length)
         {
-            Debug.LogError($"Geçersiz dünya index'i: {worldIndex}");
+            Debug.LogError($"Geï¿½ersiz dï¿½nya index'i: {worldIndex}");
         }
     }
 }

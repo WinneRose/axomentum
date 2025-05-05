@@ -698,7 +698,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -856,7 +856,7 @@ Transform:
   m_GameObject: {fileID: 7961353382755846976}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.77, z: 0}
+  m_LocalPosition: {x: 0, y: -0.593, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1120,7 +1120,7 @@ MonoBehaviour:
   moveSpeed: 1
   jumpForce: 0.7
   groundCheckPoint: {fileID: 64326216217319575}
-  groundCheckRadius: 0.5
+  groundCheckRadius: 0.34
   groundLayer:
     serializedVersion: 2
     m_Bits: 65
@@ -1133,6 +1133,8 @@ MonoBehaviour:
   healthBarImage: {fileID: 8473870429859045823}
   healthBarLerpSpeed: 5
   _healthManager: {fileID: 0}
+  damageParticlePS: {fileID: 767733564748430277, guid: b09d1d6215213c742b3777ecdd78f29a, type: 3}
+  damageParticleLifetime: 2.48
 --- !u!114 &5342609341673063590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1149,10 +1151,34 @@ MonoBehaviour:
   currentHealth: 0
   onDamaged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2308890381295101894}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: DamageParticle
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onDeath:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5342609341673063590}
+        m_TargetAssemblyTypeName: HealthManager, Assembly-CSharp
+        m_MethodName: ReloadScene
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onHealthChanged:
     m_PersistentCalls:
       m_Calls:
@@ -1219,6 +1245,9 @@ MonoBehaviour:
   playerTransform: {fileID: 6907299441536154049}
   activeElements: 
   PlatformPlaceCooldown: 1.5
+  icePlatformCooldown: 1.5
+  groundPlatformCooldown: 1.5
+  doubleJumpCooldown: 1.5
   groundPlatformPrefab: {fileID: 2824507170367716894, guid: e780eb8a16ead574fa8d55793051e182, type: 3}
   icePlatformPrefab: {fileID: 5006979021399280308, guid: d189776a8132be8409fbea1c3ed10a76, type: 3}
   platformDestroyPSPrefab: {fileID: 5346653353787606454, guid: 1fa6f1c97f137154f87b582123384596, type: 3}

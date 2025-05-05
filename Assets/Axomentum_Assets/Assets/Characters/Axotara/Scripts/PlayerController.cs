@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -42,7 +44,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float dashForce = 20f;
     [SerializeField] private float dashCooldown = 1.5f;
     private float lastDashTime = -Mathf.Infinity;
-    private bool isDashing = false;
+    private bool isDashing;
+    public float DashCooldown => dashCooldown;
+    public float LastDashTime => lastDashTime;
     
     [Header("Dash Visual")]
     [SerializeField] private GameObject dashParticlePrefab;
@@ -57,6 +61,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float healthBarLerpSpeed = 5f;
     [SerializeField] private HealthManager _healthManager;
 
+    [Header("Particle")]
+    [SerializeField] private GameObject damageParticlePS;
+    [SerializeField] private float damageParticleLifetime = 0.5f;
     #endregion
 
     #region Moving Platform
@@ -238,7 +245,7 @@ public class PlayerController : MonoBehaviour
         _rigidBody2D.linearVelocity = new Vector2(dashDirection.x * dashForce * 10, _rigidBody2D.linearVelocity.y);
 
         Debug.Log("Player dashed & Took Damage");
-        ReceiveDamage(5);
+        ReceiveDamage(20);
         
         if (dashParticlePrefab != null)
         {
@@ -283,6 +290,30 @@ public class PlayerController : MonoBehaviour
             currentPlatform = null;
         }
     }
+    
+    
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.name == "ElementPortal") // Or use tag for flexibility
+        {
+            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+            SceneManager.LoadScene(currentSceneIndex + 1); // Load next scene in build
+        }
+    }
+    
+    public void DamageParticle()
+    {
+        GameObject ps = Instantiate(damageParticlePS, transform.position, Quaternion.identity);
+        ps.transform.SetParent(transform);
+        StartCoroutine(DestroyAfterSeconds(ps));
+    }
+
+    private IEnumerator DestroyAfterSeconds(GameObject ps)
+    {
+        yield return new WaitForSeconds(damageParticleLifetime);
+        Destroy(ps);
+    }
+
     
     
 }
