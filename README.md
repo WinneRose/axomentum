@@ -1,4 +1,4 @@
-# Axoramentum - Game Design Overview
+# Axoramentum
 
 ![Axoramentum Logo](github_assets/logo.png)
 
