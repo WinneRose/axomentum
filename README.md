@@ -52,9 +52,6 @@ Players must carefully choose when and where to use elemental abilities due to t
 - Expanded level variety and secret paths
 
 ## 📷 Gallery
-
-_Add your game screenshots or concept art here._
-
 ![Gameplay Screenshot](github_assets/air.png)
 ![Gameplay Screenshot](github_assets/ground.png)
 ![Gameplay Screenshot](github_assets/water.png)
